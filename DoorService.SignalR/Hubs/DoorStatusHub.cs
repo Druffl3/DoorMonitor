@@ -89,6 +89,11 @@ namespace DoorService.SignalR.Hubs
                     newDoor.Message = "Door added succeffully";
                     newDoor.DoorId = lastDoor.DoorId;
                 }
+                else
+                {
+                    newDoor.Code = StatusCodes.Status204NoContent;
+                    newDoor.Message = "Door could not be added";
+                }
             }
             catch (Exception ex)
             {
@@ -114,12 +119,14 @@ namespace DoorService.SignalR.Hubs
                     commonDoor.Code = StatusCodes.Status400BadRequest;
                     commonDoor.Message = "The door is not available";
                 }
+                else
+                {
+                    _context.Remove(door.Result);
+                    await _context.SaveChangesAsync();
 
-                _context.Remove(door.Result);
-                await _context.SaveChangesAsync();
-
-                commonDoor.Code = StatusCodes.Status200OK;
-                commonDoor.Message = $"Door {door.Result.DoorName} removed successfully";
+                    commonDoor.Code = StatusCodes.Status200OK;
+                    commonDoor.Message = $"Door {door.Result.DoorName} removed successfully";
+                }
             }
             catch (Exception ex)
             {
